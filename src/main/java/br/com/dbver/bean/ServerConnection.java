@@ -1,5 +1,10 @@
 package br.com.dbver.bean;
 
+/**
+ * 
+ * @author victor
+ *
+ */
 public class ServerConnection {
 
 	private String server;

@@ -11,6 +11,11 @@ import br.com.dbver.dao.DBExecutor;
 import br.com.dbver.driver.DriverJDBC;
 import br.com.dbver.driver.SQLServerDriver;
 
+/**
+ * 
+ * @author victor
+ *
+ */
 public class SQLServerConnectionJUnit {
 
 	private final static Logger logger = Logger.getLogger(SQLServerConnectionJUnit.class);
@@ -34,7 +39,6 @@ public class SQLServerConnectionJUnit {
 
 	@Test
 	public void complexQuery() throws ClassNotFoundException, SQLException {
-
 		for (int j = 0; j <= 1; j++) {
 			String query = "IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TActiveCampaignPriority"
 					+ j + "]') AND type in (N'U'))" + " BEGIN " + " CREATE TABLE [dbo].[TActiveCampaignPriority" + j

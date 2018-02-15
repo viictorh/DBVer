@@ -1,4 +1,4 @@
-package br.com.dbver.file;
+package br.com.dbver.main;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -17,14 +17,14 @@ import br.com.dbver.service.ScriptExecutor;
  * @author victor
  *
  */
-public class ExecuteFileDBJUnit {
-
-	private final static Logger logger = Logger.getLogger(ExecuteFileDBJUnit.class);
+public class ExecutionJUnit {
+	private final static Logger logger = Logger.getLogger(ExecutionJUnit.class);
 	private ScriptExecutor scriptExecutor;
+	private File file;
 
 	@Before
 	public void setUp() {
-		logger.debug("Iniciando teste");
+		file = new File("C:/Users/victor/Downloads");
 		DriverJDBC driverJDBC = new SQLServerDriver();
 		ServerConnection serverConnection = new ServerConnection();
 		serverConnection.setServer("localhost");
@@ -35,7 +35,7 @@ public class ExecuteFileDBJUnit {
 
 	@Test
 	public void test() throws ClassNotFoundException, SQLException {
-		scriptExecutor.scriptsFrom(new File("C:/Users/victor/Downloads"));
+		scriptExecutor.scriptsFrom(file);
 
 	}
 
