@@ -43,7 +43,7 @@ public interface DriverJDBC {
 	}
 
 	public default String generateDbUrl(String server, String database, String user, String password) {
-		Map<String, String> map = MapBuilder.<String, String>unordered().put("server", server).put("database", database)
+		Map<String, String> map = MapBuilder.<String, String>unordered().put("server", server).put("databasename", database)
 				.put("user", user).put("password", password).build();
 		return ReplaceUtil.replaceParams(map, getDbUrl());
 	}

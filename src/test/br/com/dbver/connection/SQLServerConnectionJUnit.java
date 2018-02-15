@@ -29,6 +29,7 @@ public class SQLServerConnectionJUnit {
 		serverConnection.setServer("localhost");
 		serverConnection.setUser("sa");
 		serverConnection.setPassword("S@voxsql");
+		serverConnection.setDatabaseName("victorexcluir");
 		dbExecutor = new DBExecutor(serverConnection, driverJDBC);
 	}
 
@@ -38,7 +39,7 @@ public class SQLServerConnectionJUnit {
 	}
 
 	@Test
-	public void complexQuery() throws ClassNotFoundException, SQLException {
+	public void createTable() throws ClassNotFoundException, SQLException {
 		for (int j = 0; j <= 1; j++) {
 			String query = "IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TActiveCampaignPriority"
 					+ j + "]') AND type in (N'U'))" + " BEGIN " + " CREATE TABLE [dbo].[TActiveCampaignPriority" + j
@@ -53,6 +54,18 @@ public class SQLServerConnectionJUnit {
 			dbExecutor.executeQuery(query);
 			logger.info("Tabela criada: TActiveCampaignPriority" + j + "]");
 		}
+	}
+
+	@Test
+	public void StringGoTest() throws ClassNotFoundException, SQLException {
+		String query = "IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spWebStart]') AND type in (N'P', N'PC'))"
+				+ "	DROP PROCEDURE [dbo].[spWebStart]; " + "go" + " CREATE PROCEDURE [dbo].[spWebStart]" + "("
+				+ "	  @SessionId	VARCHAR(200)" + ")" + "as select 1";
+
+		
+		String[] split = query.split("\\sGO\\s");
+		
+		dbExecutor.executeQuery(query);
 
 	}
 

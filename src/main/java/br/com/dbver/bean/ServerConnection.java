@@ -10,6 +10,7 @@ public class ServerConnection {
 	private String server;
 	private String user;
 	private String password;
+	private String databaseName;
 
 	public String getServer() {
 		return server;
@@ -33,6 +34,14 @@ public class ServerConnection {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getDatabaseName() {
+		return databaseName;
+	}
+
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
 	}
 
 	@Override

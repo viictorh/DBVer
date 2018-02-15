@@ -30,12 +30,12 @@ public class ExecuteFileDBJUnit {
 		serverConnection.setServer("localhost");
 		serverConnection.setUser("sa");
 		serverConnection.setPassword("S@voxsql");
-		scriptExecutor = new ScriptExecutor(serverConnection, driverJDBC);
+//		scriptExecutor = new ScriptExecutor(serverConnection, driverJDBC);
 	}
 
 	@Test
 	public void test() throws ClassNotFoundException, SQLException {
-		scriptExecutor.scriptsFrom(new File("C:/Users/victor/Downloads"));
+//		scriptExecutor.scriptsFrom(new File("C:/Users/victor/Downloads"));
 
 	}
 
