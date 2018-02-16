@@ -32,9 +32,11 @@ public class ExecutionJUnit {
 		DriverJDBC driverJDBC = new SQLServerDriver();
 		ServerConnection serverConnection = new ServerConnection();
 		serverConnection.setServer("localhost");
+		serverConnection.setPort("1433");
+		serverConnection.setInstance("SQL2017");
 		serverConnection.setUser("sa");
 		serverConnection.setPassword("S@voxsql");
-		serverConnection.setDatabaseName("VictorExcluir");
+		serverConnection.setDatabaseName("testDatabase");
 		settings = new Settings(true, serverConnection, driverJDBC);
 		scriptExecutor = new ScriptExecutor(settings);
 	}

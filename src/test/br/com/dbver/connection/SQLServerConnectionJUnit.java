@@ -27,9 +27,11 @@ public class SQLServerConnectionJUnit {
 		DriverJDBC driverJDBC = new SQLServerDriver();
 		ServerConnection serverConnection = new ServerConnection();
 		serverConnection.setServer("localhost");
+		serverConnection.setPort("1433");
+		serverConnection.setInstance("SQL2017");
 		serverConnection.setUser("sa");
 		serverConnection.setPassword("S@voxsql");
-		serverConnection.setDatabaseName("victorexcluir");
+		serverConnection.setDatabaseName("testDatabase");
 		dbExecutor = new DBExecutor(serverConnection, driverJDBC);
 	}
 
@@ -58,15 +60,24 @@ public class SQLServerConnectionJUnit {
 
 	@Test
 	public void StringGoTest() throws ClassNotFoundException, SQLException {
+		String linebreak = System.getProperty("line.separator");
 		String query = "IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[spWebStart]') AND type in (N'P', N'PC'))"
-				+ "	DROP PROCEDURE [dbo].[spWebStart]; " + "go" + " CREATE PROCEDURE [dbo].[spWebStart]" + "("
-				+ "	  @SessionId	VARCHAR(200)" + ")" + "as select 1";
-
+				+ linebreak + 
+				"	DROP PROCEDURE [dbo].[spWebStart]; " 
+				+ linebreak + "go;" + linebreak + 
+				" CREATE PROCEDURE [dbo].[spWebStart]" + "(@SessionId	VARCHAR(200)" + ")" 
+				+ linebreak + 
+				"as select 1";
+		
+		// Replaces "go","go;" and "GO;" with "GO" 
+		query = query.replaceAll("(?i)\\sgo(;)?\\s", "GO");
 		
 		String[] split = query.split("\\sGO\\s");
 		
-		dbExecutor.executeQuery(query);
-
+		// Execute each block
+		for (String codeBlock : split) {
+			dbExecutor.executeQuery(codeBlock);
+		}		
 	}
 
 }

@@ -28,6 +28,8 @@ public class ExecuteFileDBJUnit {
 		DriverJDBC driverJDBC = new SQLServerDriver();
 		ServerConnection serverConnection = new ServerConnection();
 		serverConnection.setServer("localhost");
+		serverConnection.setPort("1433");
+		serverConnection.setInstance("SQL2017");
 		serverConnection.setUser("sa");
 		serverConnection.setPassword("S@voxsql");
 //		scriptExecutor = new ScriptExecutor(serverConnection, driverJDBC);

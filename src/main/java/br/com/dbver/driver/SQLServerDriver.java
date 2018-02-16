@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 public class SQLServerDriver implements DriverJDBC {
 
 	private static final String JDBC_DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String SERVER_URL = "jdbc:sqlserver://%(server);user=%(user);password=%(password)";
-	private static final String DB_URL = "jdbc:sqlserver://%(server);dataBaseName=%(databasename);user=%(user);password=%(password)";
+	private static final String SERVER_URL = "jdbc:sqlserver://%(server):%(port);instance=%(instance);user=%(user);password=%(password)";
+	private static final String DB_URL = "jdbc:sqlserver://%(server):%(port);instance=%(instance);dataBaseName=%(databasename);user=%(user);password=%(password)";
 	private static final Pattern PARAMETER_PATTERN = Pattern.compile("\\$\\(.*\\)");
 
 	public String getDriverClass() {

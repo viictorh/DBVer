@@ -8,6 +8,8 @@ package br.com.dbver.bean;
 public class ServerConnection {
 
 	private String server;
+	private String instance;
+	private String port;
 	private String user;
 	private String password;
 	private String databaseName;
@@ -18,6 +20,22 @@ public class ServerConnection {
 
 	public void setServer(String server) {
 		this.server = server;
+	}
+
+	public String getInstance() {
+		return instance;
+	}
+
+	public void setInstance(String instance) {
+		this.instance = instance;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
 	}
 
 	public String getUser() {
