@@ -2,13 +2,13 @@ package br.com.dbver.driver;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.dbver.bean.FileParameter;
-import br.com.dbver.util.MapBuilder;
-import br.com.dbver.util.ReplaceUtil;
+import br.com.dbver.bean.ServerConnection;
 
 /**
  * 
@@ -18,39 +18,13 @@ import br.com.dbver.util.ReplaceUtil;
 public interface DriverJDBC {
 	public String getDriverClass();
 
-	public String getServerUrl();
-
-	public String getDbUrl();
-
 	public Pattern getParameterPatten();
 
-	/**
-	 * Retorna a URL de conexão com o banco de dados de acordo com os parametros
-	 * passados
-	 * 
-	 * @param server
-	 *            - servidor de conexão com o banco
-	 * @param user
-	 *            - usuário
-	 * @param password
-	 *            - senha
-	 * @return
-	 */
-	public default String generateServerUrl(String server, String user, String password, String instance, String port) {
-		Map<String, String> map = MapBuilder.<String, String>unordered().put("server", server).put("port", port)
-				.put("instance", instance).put("user", user).put("password", password).build();
-		return ReplaceUtil.replaceParams(map, getServerUrl());
-	}
+	public String generateURLConnection(ServerConnection serverConnection, boolean master);
 
-	public default String generateDbUrl(String server, String database, String user, String password, String instance,
-			String port) {
-		Map<String, String> map = MapBuilder.<String, String>unordered().put("server", server).put("port", port)
-				.put("instance", instance).put("databasename", database).put("user", user).put("password", password)
-				.build();
-		return ReplaceUtil.replaceParams(map, getDbUrl());
-	}
+	public List<String> prepareQuery(String query);
 
-	public default Map<String, FileParameter> findParameters(String fileString, File file) {
+	default public Map<String, FileParameter> findParameters(String fileString, File file) {
 		Map<String, FileParameter> parameterMap = new HashMap<>();
 		Matcher matcher = getParameterPatten().matcher(fileString);
 		while (matcher.find()) {
