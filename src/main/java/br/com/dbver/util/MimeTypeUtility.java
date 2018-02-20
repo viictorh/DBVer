@@ -10,6 +10,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+/**
+ * 
+ * @author victor
+ *
+ */
 public class MimeTypeUtility {
 	private static ResourceBundle bundle;
 	private final static Logger logger = Logger.getLogger(MimeTypeUtility.class);
