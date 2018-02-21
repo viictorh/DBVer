@@ -77,7 +77,7 @@ public class ScriptExecutor {
 
 	}
 
-	private void execute(FolderExecute folderExecute, Map<String, String> parameters, Connection connection) {
+	private void execute(FolderExecute folderExecute, Map<String, String> parameters, Connection connection) throws Exception {
 		List<File> files = readFiles(folderExecute);
 		if (!settings.isRobot() && parameters == null && settings.getDriverJDBC().getParameterPattern() != null) {
 			try {
@@ -86,8 +86,8 @@ public class ScriptExecutor {
 				e.printStackTrace();
 			}
 		}
-
-		files.forEach(f -> {
+		
+		for (File f : files) {
 			try {
 				String fileString = new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8).trim();
 				if (parameters != null) {
@@ -96,19 +96,13 @@ public class ScriptExecutor {
 				database.executeQuery(connection, fileString);
 				logger.info("Arquivo executado com sucesso: " + f.getAbsolutePath());
 			} catch (ClassNotFoundException | SQLException | IOException e) {
-				logger.error("Erro no arquivo: " + f.getAbsolutePath());
+				logger.error("Erro no arquivo: " + f.getAbsolutePath(), e);
 				logger.error("Dropping database: " + settings.getServerConnection().getDatabaseName());
 				database.dropDatabase(connection);
 				logger.error("Dropped database: " + settings.getServerConnection().getDatabaseName());
-				try {
-					connection.close();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-				return;
-			}
-		});
-
+				throw e;
+			}					
+		}
 	}
 
 	private List<File> readFiles(FolderExecute folderExecute) {

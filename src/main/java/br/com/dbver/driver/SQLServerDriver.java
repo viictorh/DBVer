@@ -2,6 +2,7 @@ package br.com.dbver.driver;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,8 +17,9 @@ public class SQLServerDriver implements DriverJDBC {
 	private static final String JDBC_DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	private static final String DB_URL = "jdbc:sqlserver://%(server):%(port);instanceName=%(instance);dataBaseName=%(databasename);user=%(user);password=%(password)";
 	private static final Pattern PARAMETER_PATTERN = Pattern.compile("\\$\\(.*\\)");
-	private static final Pattern BATCH_TERMINATOR_PATTERN = Pattern.compile("(?i)\\s?go(;)?\\s?");
-
+	private static final Pattern BATCH_TERMINATOR_PATTERN = Pattern.compile("(?i)^(\\s*)go;?(\\s*)$",Pattern.MULTILINE);
+	private static final Pattern COMMENT_PATTERN = Pattern.compile("(?:/\\*[^;]*?\\*/)|(?:--[^;]*?$)", Pattern.DOTALL | Pattern.MULTILINE);
+	
 	@Override
 	public String getDriverClass() {
 		return JDBC_DRIVER_CLASS;
@@ -30,6 +32,8 @@ public class SQLServerDriver implements DriverJDBC {
 
 	@Override
 	public List<String> prepareQuery(String query) {
+		
+		
 		return Arrays.asList(BATCH_TERMINATOR_PATTERN.split(query));
 	}
 
