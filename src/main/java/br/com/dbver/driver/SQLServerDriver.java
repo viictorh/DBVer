@@ -24,7 +24,7 @@ public class SQLServerDriver implements DriverJDBC {
 	}
 
 	@Override
-	public Pattern getParameterPatten() {
+	public Pattern getParameterPattern() {
 		return PARAMETER_PATTERN;
 	}
 
@@ -53,6 +53,17 @@ public class SQLServerDriver implements DriverJDBC {
 		String connectionString = ReplaceUtil.replaceParams(builder.build(), DB_URL);
 		logger.debug(connectionString);
 		return connectionString;
+	}
+
+	@Override
+	public String generateDropDatabaseStatement(ServerConnection connection) {		
+		String statement;
+		
+		statement = "IF db_id('" + connection.getDatabaseName() + "') is not null";
+		statement += System.lineSeparator();
+		statement += "DROP DATABASE " + connection.getDatabaseName() + ";";
+		
+		return statement;
 	}
 
 }

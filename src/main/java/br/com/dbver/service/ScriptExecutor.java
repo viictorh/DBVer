@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-
 import br.com.dbver.bean.FileParameter;
 import br.com.dbver.bean.FolderExecute;
 import br.com.dbver.bean.Settings;
@@ -80,7 +79,7 @@ public class ScriptExecutor {
 
 	private void execute(FolderExecute folderExecute, Map<String, String> parameters, Connection connection) {
 		List<File> files = readFiles(folderExecute);
-		if (!settings.isRobot() && parameters == null && settings.getDriverJDBC().getParameterPatten() != null) {
+		if (!settings.isRobot() && parameters == null && settings.getDriverJDBC().getParameterPattern() != null) {
 			try {
 				checkParameters(files);
 			} catch (IOException e) {
@@ -98,7 +97,15 @@ public class ScriptExecutor {
 				logger.info("Arquivo executado com sucesso: " + f.getAbsolutePath());
 			} catch (ClassNotFoundException | SQLException | IOException e) {
 				logger.error("Erro no arquivo: " + f.getAbsolutePath());
-				e.printStackTrace();
+				logger.error("Dropping database: " + settings.getServerConnection().getDatabaseName());
+				database.dropDatabase(connection);
+				logger.error("Dropped database: " + settings.getServerConnection().getDatabaseName());
+				try {
+					connection.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				return;
 			}
 		});
 
