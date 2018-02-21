@@ -28,7 +28,9 @@ public class Database {
 
 	public Connection createConnection(boolean master) throws ClassNotFoundException, SQLException {
 		Class.forName(driverJDBC.getDriverClass());
-		return DriverManager.getConnection(driverJDBC.generateURLConnection(serverConnection, master));
+		Connection connection = DriverManager.getConnection(driverJDBC.generateURLConnection(serverConnection, master));
+		logger.debug("Connection created succesfully");
+		return connection;
 	}
 
 	public void executeQuery(String query, boolean master) throws ClassNotFoundException, SQLException {

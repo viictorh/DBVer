@@ -5,17 +5,18 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import br.com.dbver.bean.ServerConnection;
 import br.com.dbver.util.MapBuilder;
 import br.com.dbver.util.ReplaceUtil;
 
 public class SQLServerDriver implements DriverJDBC {
-
+	private final static Logger logger = Logger.getLogger(SQLServerDriver.class);
 	private static final String JDBC_DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	private static final String DB_URL = "jdbc:sqlserver://%(server):%(port);instanceName=%(instance);dataBaseName=%(databasename);user=%(user);password=%(password)";
 	private static final Pattern PARAMETER_PATTERN = Pattern.compile("\\$\\(.*\\)");
-	private static final Pattern BATCH_TERMINATOR_PATTERN = Pattern.compile("(?i)\\sgo(;)?\\s");
+	private static final Pattern BATCH_TERMINATOR_PATTERN = Pattern.compile("(?i)\\s?go(;)?\\s?");
 
 	@Override
 	public String getDriverClass() {
@@ -49,7 +50,9 @@ public class SQLServerDriver implements DriverJDBC {
 		} else {
 			builder.put("databasename", connection.getDatabaseName());
 		}
-		return ReplaceUtil.replaceParams(builder.build(), DB_URL);
+		String connectionString = ReplaceUtil.replaceParams(builder.build(), DB_URL);
+		logger.debug(connectionString);
+		return connectionString;
 	}
 
 }

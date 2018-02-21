@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,7 +22,8 @@ import br.com.dbver.util.MapBuilder;
  *
  */
 public class ExecutionJUnit {
-	private final static Logger logger = Logger.getLogger(ExecutionJUnit.class);
+	// private final static Logger logger =
+	// Logger.getLogger(ExecutionJUnit.class);
 	private ScriptExecutor scriptExecutor;
 	private Settings settings;
 
@@ -33,7 +33,7 @@ public class ExecutionJUnit {
 		ServerConnection serverConnection = new ServerConnection();
 		serverConnection.setServer("localhost");
 		serverConnection.setPort("1433");
-		serverConnection.setInstance("SQL2017");
+		// serverConnection.setInstance("SQL2017");
 		serverConnection.setUser("sa");
 		serverConnection.setPassword("S@voxsql");
 		serverConnection.setDatabaseName("testDatabase");
@@ -43,17 +43,28 @@ public class ExecutionJUnit {
 
 	@Test
 	public void test() throws ClassNotFoundException, SQLException {
-		FolderExecute createDb = new FolderExecute(
-				new File("C:\\Users\\victor.bello\\Downloads\\BDVOSCenter_5_3\\BD\\VOSCENTER\\MDF"), true);
-		FolderExecute createTables = new FolderExecute(
-				new File("C:\\Users\\victor.bello\\Downloads\\BDVOSCenter_5_3\\BD\\VOSCENTER\\Tables"), false);
+		String basePath = "C:\\Users\\victor\\Downloads\\Voscenter\\" + File.separator;
+		FolderExecute createMDF = new FolderExecute(new File(basePath + "MDF"), true);
+		FolderExecute createConfig = new FolderExecute(new File(basePath + "Configuration"), true);
+		FolderExecute createTables = new FolderExecute(new File(basePath + "Tables"), false);
+		FolderExecute createSynonyms = new FolderExecute(new File(basePath + "Synonyms"), false);
+		FolderExecute createFunctions = new FolderExecute(new File(basePath + "Functions"), false);
+		FolderExecute createProcedures = new FolderExecute(new File(basePath + "Procedures"), false);
+		FolderExecute createTriggers = new FolderExecute(new File(basePath + "Triggers"), false);
+		FolderExecute createIndex = new FolderExecute(new File(basePath + "Index"), false);
+		FolderExecute createPreCarga = new FolderExecute(new File(basePath + "PreCarga"), false);
+		FolderExecute createConstraints = new FolderExecute(new File(basePath + "Constraints"), false);
+		FolderExecute createSynonymsUpdate = new FolderExecute(new File(basePath + "SynonymsUpdate"), false);
 
 		Map<String, String> parameters = MapBuilder.<String, String>unordered()
-				.put("$(varPathMDF)", "C:\\Users\\victor.bello\\Downloads\\testeDB")
-				.put("$(varPathLDF)", "C:\\Users\\victor.bello\\Downloads\\testeDB")
+				.put("$(varPathMDF)", "C:\\Program Files\\Microsoft SQL Server\\DB")
+				.put("$(varPathLDF)", "C:\\Program Files\\Microsoft SQL Server\\DB")
 				.put("$(varDBName)", settings.getServerConnection().getDatabaseName()).build();
 
-		scriptExecutor.scriptsFrom(Arrays.asList(createDb, createTables), parameters);
+		scriptExecutor.scriptsFrom(
+				Arrays.asList(createMDF, createConfig, createTables, createSynonyms, createFunctions, createTriggers,
+						createProcedures, createIndex, createPreCarga, createConstraints, createSynonymsUpdate),
+				parameters);
 
 	}
 
