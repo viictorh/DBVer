@@ -33,17 +33,17 @@ public class ExecutionJUnit {
 		ServerConnection serverConnection = new ServerConnection();
 		serverConnection.setServer("localhost");
 		serverConnection.setPort("1433");
-		// serverConnection.setInstance("SQL2017");
+		serverConnection.setInstance("SQL2017");
 		serverConnection.setUser("sa");
 		serverConnection.setPassword("S@voxsql");
-		serverConnection.setDatabaseName("testDatabase");
+		serverConnection.setDatabaseName("Voscenter");
 		settings = new Settings(true, serverConnection, driverJDBC);
 		scriptExecutor = new ScriptExecutor(settings);
 	}
 
 	@Test
 	public void test() throws ClassNotFoundException, SQLException {
-		String basePath = "C:\\Users\\victor\\Downloads\\Voscenter\\" + File.separator;
+		String basePath = "C:\\Users\\sergi\\Downloads\\Voscenter" + File.separator;
 		FolderExecute createMDF = new FolderExecute(new File(basePath + "MDF"), true);
 		FolderExecute createConfig = new FolderExecute(new File(basePath + "Configuration"), true);
 		FolderExecute createTables = new FolderExecute(new File(basePath + "Tables"), false);
@@ -57,15 +57,14 @@ public class ExecutionJUnit {
 		FolderExecute createSynonymsUpdate = new FolderExecute(new File(basePath + "SynonymsUpdate"), false);
 
 		Map<String, String> parameters = MapBuilder.<String, String>unordered()
-				.put("$(varPathMDF)", "C:\\Program Files\\Microsoft SQL Server\\DB")
-				.put("$(varPathLDF)", "C:\\Program Files\\Microsoft SQL Server\\DB")
+				.put("$(varPathMDF)", "C:\\BASES\\")
+				.put("$(varPathLDF)", "C:\\BASES\\")
 				.put("$(varDBName)", settings.getServerConnection().getDatabaseName()).build();
 
 		scriptExecutor.scriptsFrom(
 				Arrays.asList(createMDF, createConfig, createTables, createSynonyms, createFunctions, createTriggers,
 						createProcedures, createIndex, createPreCarga, createConstraints, createSynonymsUpdate),
 				parameters);
-
 	}
 
 }

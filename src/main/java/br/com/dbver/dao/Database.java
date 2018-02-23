@@ -52,4 +52,20 @@ public class Database {
 		}
 	}
 
+	public void dropDatabase(String databaseName) throws SQLException {		
+		logger.debug("dropDatabase(connection)");
+		String query = driverJDBC.generateDropDatabaseStatement(serverConnection);
+		logger.debug(query);
+		Connection connection = DriverManager.getConnection(driverJDBC.generateURLConnection(serverConnection, true));		
+		
+		try (Statement stmt = connection.createStatement();) {
+			List<String> queryList = driverJDBC.prepareQuery(query);
+			for (String q : queryList) {
+				stmt.execute(q);
+			}
+		} catch (SQLException e) {
+			logger.error("Error dropping database" + serverConnection.getDatabaseName() + ". " + e.getMessage());
+		}		
+	}
+
 }

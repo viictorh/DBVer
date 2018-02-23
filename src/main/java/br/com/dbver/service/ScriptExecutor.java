@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-
 import br.com.dbver.bean.FileParameter;
 import br.com.dbver.bean.FolderExecute;
 import br.com.dbver.bean.Settings;
@@ -36,7 +35,7 @@ public class ScriptExecutor {
 		database = new Database(settings.getServerConnection(), settings.getDriverJDBC());
 	}
 
-	public void scriptsFrom(List<FolderExecute> foldersExecute, Map<String, String> parameters) {
+	public void scriptsFrom(List<FolderExecute> foldersExecute, Map<String, String> parameters) throws SQLException {
 		boolean lastConnection = false;
 		Connection connection = null;
 		try {
@@ -54,7 +53,12 @@ public class ScriptExecutor {
 				lastConnection = folderExecute.isMaster();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+						
+			if (connection != null) {
+				connection.close();
+			}
+			database.dropDatabase(settings.getServerConnection().getDatabaseName());
+
 		} finally {
 			if (connection != null) {
 				try {
@@ -78,17 +82,17 @@ public class ScriptExecutor {
 
 	}
 
-	private void execute(FolderExecute folderExecute, Map<String, String> parameters, Connection connection) {
+	private void execute(FolderExecute folderExecute, Map<String, String> parameters, Connection connection) throws Exception {
 		List<File> files = readFiles(folderExecute);
-		if (!settings.isRobot() && parameters == null && settings.getDriverJDBC().getParameterPatten() != null) {
+		if (!settings.isRobot() && parameters == null && settings.getDriverJDBC().getParameterPattern() != null) {
 			try {
 				checkParameters(files);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-
-		files.forEach(f -> {
+		
+		for (File f : files) {
 			try {
 				String fileString = new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8).trim();
 				if (parameters != null) {
@@ -97,11 +101,10 @@ public class ScriptExecutor {
 				database.executeQuery(connection, fileString);
 				logger.info("Arquivo executado com sucesso: " + f.getAbsolutePath());
 			} catch (ClassNotFoundException | SQLException | IOException e) {
-				logger.error("Erro no arquivo: " + f.getAbsolutePath());
-				e.printStackTrace();
-			}
-		});
-
+				logger.error("Erro no arquivo: " + f.getAbsolutePath(), e);
+				throw e;
+			}					
+		}
 	}
 
 	private List<File> readFiles(FolderExecute folderExecute) {

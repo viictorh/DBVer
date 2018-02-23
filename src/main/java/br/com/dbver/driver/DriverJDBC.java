@@ -18,7 +18,7 @@ import br.com.dbver.bean.ServerConnection;
 public interface DriverJDBC {
 	public String getDriverClass();
 
-	public Pattern getParameterPatten();
+	public Pattern getParameterPattern();
 
 	public String generateURLConnection(ServerConnection serverConnection, boolean master);
 
@@ -26,10 +26,14 @@ public interface DriverJDBC {
 
 	default public Map<String, FileParameter> findParameters(String fileString, File file) {
 		Map<String, FileParameter> parameterMap = new HashMap<>();
-		Matcher matcher = getParameterPatten().matcher(fileString);
+		Matcher matcher = getParameterPattern().matcher(fileString);
 		while (matcher.find()) {
 			parameterMap.put(matcher.group(), new FileParameter(file));
 		}
 		return parameterMap;
 	}
+	
+	public String generateDropDatabaseStatement(ServerConnection serverConnection);
+	
+	public String preProcessComments(String sql);
 }
