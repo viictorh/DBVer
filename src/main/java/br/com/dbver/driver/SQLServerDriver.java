@@ -60,10 +60,17 @@ public class SQLServerDriver implements DriverJDBC {
 	public String generateDropDatabaseStatement(ServerConnection connection) {
 		String statement;
 
-		statement = "IF db_id('" + connection.getDatabaseName() + "') is not null";
-		statement += System.lineSeparator();
-		statement += "DROP DATABASE " + connection.getDatabaseName() + ";";
-
+		statement = "IF db_id('" + connection.getDatabaseName() + "') is not null" + System.lineSeparator()
+				+ "BEGIN" + System.lineSeparator()				
+				+ "		ALTER DATABASE " + connection.getDatabaseName() + " SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" + System.lineSeparator()
+				+ "END" + System.lineSeparator()
+				+ "GO" + System.lineSeparator()
+				+ "IF db_id('" + connection.getDatabaseName() + "') is not null" + System.lineSeparator()
+				+ "BEGIN" + System.lineSeparator()				
+				+ "		DROP DATABASE " + connection.getDatabaseName() + ";" + System.lineSeparator()
+				+ "END" + System.lineSeparator()
+				+ "GO";
+			
 		return statement;
 	}
 	
@@ -83,7 +90,7 @@ public class SQLServerDriver implements DriverJDBC {
 					sql = sql.replaceFirst("\\/\\*", "");
 					sql = sql.replace("__FIRST_COMM_FOUND__", "/*");
 				} else {
-
+					sql = sql.replaceFirst(Pattern.quote(m.group()), BATCH_TERMINATOR_PATTERN.matcher(m.group()).replaceAll("presunto!!!"));
 					sql = sql.replaceFirst("\\/\\*", "__ENDED_FIRST_COMM_FOUND__");
 					sql = sql.replaceFirst("\\*\\/", "__ENDED_LAST_COMM_FOUND__");
 					
@@ -99,9 +106,10 @@ public class SQLServerDriver implements DriverJDBC {
 		if (countOpen == 1 && countClose == 0) {
 			sql = sql + "*/";
 		}
-
+		
 		sql = sql.replaceAll("__ENDED_FIRST_COMM_FOUND__", "/*");
 		sql = sql.replaceAll("__ENDED_LAST_COMM_FOUND__", "*/");
+			
 		return sql;
 	}
 	

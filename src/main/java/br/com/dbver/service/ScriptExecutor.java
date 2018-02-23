@@ -35,7 +35,7 @@ public class ScriptExecutor {
 		database = new Database(settings.getServerConnection(), settings.getDriverJDBC());
 	}
 
-	public void scriptsFrom(List<FolderExecute> foldersExecute, Map<String, String> parameters) {
+	public void scriptsFrom(List<FolderExecute> foldersExecute, Map<String, String> parameters) throws SQLException {
 		boolean lastConnection = false;
 		Connection connection = null;
 		try {
@@ -53,7 +53,12 @@ public class ScriptExecutor {
 				lastConnection = folderExecute.isMaster();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+						
+			if (connection != null) {
+				connection.close();
+			}
+			database.dropDatabase(settings.getServerConnection().getDatabaseName());
+
 		} finally {
 			if (connection != null) {
 				try {
@@ -97,9 +102,6 @@ public class ScriptExecutor {
 				logger.info("Arquivo executado com sucesso: " + f.getAbsolutePath());
 			} catch (ClassNotFoundException | SQLException | IOException e) {
 				logger.error("Erro no arquivo: " + f.getAbsolutePath(), e);
-				logger.error("Dropping database: " + settings.getServerConnection().getDatabaseName());
-				database.dropDatabase(connection);
-				logger.error("Dropped database: " + settings.getServerConnection().getDatabaseName());
 				throw e;
 			}					
 		}
