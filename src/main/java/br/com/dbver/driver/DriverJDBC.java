@@ -34,4 +34,6 @@ public interface DriverJDBC {
 	}
 	
 	public String generateDropDatabaseStatement(ServerConnection serverConnection);
+	
+	public String preProcessComments(String sql);
 }

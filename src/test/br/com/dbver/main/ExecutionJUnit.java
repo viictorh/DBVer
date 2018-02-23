@@ -43,7 +43,7 @@ public class ExecutionJUnit {
 
 	@Test
 	public void test() throws ClassNotFoundException, SQLException {
-		String basePath = "C:\\DBVer\\Voscenter" + File.separator;
+		String basePath = "C:\\Users\\sergio.tosta\\Documents\\GIT_BD\\Produto 5.3\\VOSCENTER" + File.separator;
 		FolderExecute createMDF = new FolderExecute(new File(basePath + "MDF"), true);
 		FolderExecute createConfig = new FolderExecute(new File(basePath + "Configuration"), true);
 		FolderExecute createTables = new FolderExecute(new File(basePath + "Tables"), false);
@@ -55,6 +55,7 @@ public class ExecutionJUnit {
 		FolderExecute createPreCarga = new FolderExecute(new File(basePath + "PreCarga"), false);
 		FolderExecute createConstraints = new FolderExecute(new File(basePath + "Constraints"), false);
 		FolderExecute createSynonymsUpdate = new FolderExecute(new File(basePath + "SynonymsUpdate"), false);
+		FolderExecute teste = new FolderExecute(new File(basePath + "Teste"), true);
 
 		Map<String, String> parameters = MapBuilder.<String, String>unordered()
 				.put("$(varPathMDF)", "C:\\BASES\\")
@@ -62,8 +63,8 @@ public class ExecutionJUnit {
 				.put("$(varDBName)", settings.getServerConnection().getDatabaseName()).build();
 
 		scriptExecutor.scriptsFrom(
-				Arrays.asList(createMDF, createConfig, createTables, createSynonyms, createFunctions, createTriggers,
-						createProcedures, createIndex, createPreCarga, createConstraints, createSynonymsUpdate),
+				Arrays.asList(/*createMDF, createConfig, createTables, createSynonyms, createFunctions, createTriggers,
+						createProcedures, createIndex, createPreCarga, createConstraints, createSynonymsUpdate*/teste ),
 				parameters);
 
 	}

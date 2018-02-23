@@ -17,9 +17,8 @@ public class SQLServerDriver implements DriverJDBC {
 	private static final String JDBC_DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	private static final String DB_URL = "jdbc:sqlserver://%(server):%(port);instanceName=%(instance);dataBaseName=%(databasename);user=%(user);password=%(password)";
 	private static final Pattern PARAMETER_PATTERN = Pattern.compile("\\$\\(.*\\)");
-	private static final Pattern BATCH_TERMINATOR_PATTERN = Pattern.compile("(?i)^(\\s*)go;?(\\s*)$",Pattern.MULTILINE);
-	private static final Pattern COMMENT_PATTERN = Pattern.compile("(?:/\\*[^;]*?\\*/)|(?:--[^;]*?$)", Pattern.DOTALL | Pattern.MULTILINE);
-	
+	private static final Pattern BATCH_TERMINATOR_PATTERN = Pattern.compile("(?i)^(\\s*)go;?(\\s*)$", Pattern.MULTILINE);
+
 	@Override
 	public String getDriverClass() {
 		return JDBC_DRIVER_CLASS;
@@ -31,10 +30,8 @@ public class SQLServerDriver implements DriverJDBC {
 	}
 
 	@Override
-	public List<String> prepareQuery(String query) {
-		
-		
-		return Arrays.asList(BATCH_TERMINATOR_PATTERN.split(query));
+	public List<String> prepareQuery(String query) {		
+		return Arrays.asList(BATCH_TERMINATOR_PATTERN.split(preProcessComments(query)));
 	}
 
 	@Override
@@ -60,14 +57,52 @@ public class SQLServerDriver implements DriverJDBC {
 	}
 
 	@Override
-	public String generateDropDatabaseStatement(ServerConnection connection) {		
+	public String generateDropDatabaseStatement(ServerConnection connection) {
 		String statement;
-		
+
 		statement = "IF db_id('" + connection.getDatabaseName() + "') is not null";
 		statement += System.lineSeparator();
 		statement += "DROP DATABASE " + connection.getDatabaseName() + ";";
-		
+
 		return statement;
 	}
+	
+	public String preProcessComments(String sql) {
+		main: while (true) {
+			Pattern p = Pattern.compile("\\/\\*[\\w\\W]*?(?=\\*\\/)\\*\\/");
+			Matcher m = p.matcher(sql);
 
+			if (m.find()) {
+				int countOpen = (m.group().length() - m.group().replaceAll("\\/\\*", "").length()) / 2;
+				int countClose = (m.group().length() - m.group().replaceAll("\\*\\/", "").length()) / 2;
+								
+				if (countOpen > countClose) {
+					sql = sql.replaceFirst(Pattern.quote(m.group()), BATCH_TERMINATOR_PATTERN.matcher(m.group()).replaceAll("presunto!!!"));
+					sql = sql.replaceFirst("\\*\\/", "");
+					sql = sql.replaceFirst("\\/\\*", "__FIRST_COMM_FOUND__");
+					sql = sql.replaceFirst("\\/\\*", "");
+					sql = sql.replace("__FIRST_COMM_FOUND__", "/*");
+				} else {
+
+					sql = sql.replaceFirst("\\/\\*", "__ENDED_FIRST_COMM_FOUND__");
+					sql = sql.replaceFirst("\\*\\/", "__ENDED_LAST_COMM_FOUND__");
+					
+					
+				}
+			} else {
+				break main;
+			}
+		}
+
+		int countOpen = (sql.length() - sql.replaceAll("\\/\\*", "").length()) / 2;
+		int countClose = (sql.length() - sql.replaceAll("\\*\\/", "").length()) / 2;
+		if (countOpen == 1 && countClose == 0) {
+			sql = sql + "*/";
+		}
+
+		sql = sql.replaceAll("__ENDED_FIRST_COMM_FOUND__", "/*");
+		sql = sql.replaceAll("__ENDED_LAST_COMM_FOUND__", "*/");
+		return sql;
+	}
+	
 }
