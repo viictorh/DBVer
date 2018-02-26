@@ -33,7 +33,7 @@ public class ExecutionJUnit {
 		ServerConnection serverConnection = new ServerConnection();
 		serverConnection.setServer("localhost");
 		serverConnection.setPort("1433");
-		serverConnection.setInstance("SQL2017");
+		//serverConnection.setInstance("SQL2017");
 		serverConnection.setUser("sa");
 		serverConnection.setPassword("S@voxsql");
 		serverConnection.setDatabaseName("Voscenter");
@@ -43,11 +43,12 @@ public class ExecutionJUnit {
 
 	@Test
 	public void test() throws ClassNotFoundException, SQLException {
-		String basePath = "C:\\Users\\sergi\\Downloads\\Voscenter" + File.separator;
+		String basePath = "C:\\Users\\sergio.tosta\\Documents\\GIT_BD\\Produto 5.3\\VOSCENTER" + File.separator;
 		FolderExecute createMDF = new FolderExecute(new File(basePath + "MDF"), true);
 		FolderExecute createConfig = new FolderExecute(new File(basePath + "Configuration"), true);
 		FolderExecute createTables = new FolderExecute(new File(basePath + "Tables"), false);
 		FolderExecute createSynonyms = new FolderExecute(new File(basePath + "Synonyms"), false);
+		FolderExecute createViews = new FolderExecute(new File(basePath + "Views"), false);
 		FolderExecute createFunctions = new FolderExecute(new File(basePath + "Functions"), false);
 		FolderExecute createProcedures = new FolderExecute(new File(basePath + "Procedures"), false);
 		FolderExecute createTriggers = new FolderExecute(new File(basePath + "Triggers"), false);
@@ -62,7 +63,7 @@ public class ExecutionJUnit {
 				.put("$(varDBName)", settings.getServerConnection().getDatabaseName()).build();
 
 		scriptExecutor.scriptsFrom(
-				Arrays.asList(createMDF, createConfig, createTables, createSynonyms, createFunctions, createTriggers,
+				Arrays.asList(createMDF, createConfig, createTables, createSynonyms, createViews, createFunctions, createTriggers,
 						createProcedures, createIndex, createPreCarga, createConstraints, createSynonymsUpdate),
 				parameters);
 	}
