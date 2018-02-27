@@ -99,7 +99,7 @@ public class ScriptExecutor {
 					fileString = ReplaceUtil.replaceString(parameters, fileString);
 				}
 				database.executeQuery(connection, fileString);
-				logger.info("Arquivo executado com sucesso: " + f.getAbsolutePath());
+				logger.debug("Arquivo executado com sucesso: " + f.getAbsolutePath());
 			} catch (ClassNotFoundException | SQLException | IOException e) {
 				logger.error("Erro no arquivo: " + f.getAbsolutePath(), e);
 				throw e;

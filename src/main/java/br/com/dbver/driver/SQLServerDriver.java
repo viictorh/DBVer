@@ -18,7 +18,7 @@ public class SQLServerDriver implements DriverJDBC {
 	private static final String DB_URL = "jdbc:sqlserver://%(server):%(port);instanceName=%(instance);dataBaseName=%(databasename);user=%(user);password=%(password)";
 	private static final Pattern PARAMETER_PATTERN = Pattern.compile("\\$\\(.*\\)");
 	private static final Pattern BATCH_TERMINATOR_PATTERN = Pattern.compile("(?i)^(\\s*)go;?(\\s*)$", Pattern.MULTILINE);
-
+	private static final Pattern COMMENT_PATTERN = Pattern.compile("\\/\\*[\\w\\W]*?(?=\\*\\/)\\*\\/");
 	@Override
 	public String getDriverClass() {
 		return JDBC_DRIVER_CLASS;
@@ -76,8 +76,7 @@ public class SQLServerDriver implements DriverJDBC {
 	
 	public String preProcessComments(String sql) {
 		main: while (true) {
-			Pattern p = Pattern.compile("\\/\\*[\\w\\W]*?(?=\\*\\/)\\*\\/");
-			Matcher m = p.matcher(sql);
+			Matcher m = COMMENT_PATTERN.matcher(sql);
 
 			if (m.find()) {
 				int countOpen = (m.group().length() - m.group().replaceAll("\\/\\*", "").length()) / 2;
