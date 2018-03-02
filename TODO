@@ -1,0 +1,5 @@
+TODO List:
+
+ - Create possibility to use default list of folders or user chooses the folder and orders to execute
+ 	-- Default list  set on Enum. This enum would have the folder names and the user would pass only the main directory.
+	-- Implement execution via command line.

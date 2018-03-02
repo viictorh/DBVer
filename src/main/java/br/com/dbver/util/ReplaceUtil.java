@@ -17,4 +17,9 @@ public class ReplaceUtil {
 				(s, s2) -> s);
 	}
 
+	public static String replaceString(Map<String, String> hashMap, String template) {
+		return hashMap.entrySet().stream().reduce(template, (s, e) -> s.replace(e.getKey(), e.getValue()),
+				(s, s2) -> s);
+	}
+
 }

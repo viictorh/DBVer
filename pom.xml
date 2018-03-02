@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com</groupId>
 	<artifactId>dbver</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.0-beta.0</version>
 	<name>DBVerr</name>
 	<description>Aplicativo para auxiliar a criação de banco de dados baseando-se nos scripts passados</description>
 
@@ -19,8 +19,8 @@
 		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/sqljdbc4 -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>sqljdbc4</artifactId>
-			<version>4.0</version>
+    		<artifactId>mssql-jdbc</artifactId>
+    		<version>6.1.0.jre8</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
