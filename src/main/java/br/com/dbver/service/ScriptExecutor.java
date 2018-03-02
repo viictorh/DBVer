@@ -1,23 +1,23 @@
 package br.com.dbver.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import br.com.dbver.bean.FileParameter;
+
 import br.com.dbver.bean.FolderExecute;
 import br.com.dbver.bean.Settings;
+import br.com.dbver.bean.Settings.ErrorAction;
 import br.com.dbver.dao.Database;
-import br.com.dbver.util.MimeTypeUtility;
+import br.com.dbver.exception.ExecutionError;
 import br.com.dbver.util.ReplaceUtil;
 
 /**
@@ -35,63 +35,40 @@ public class ScriptExecutor {
 		database = new Database(settings.getServerConnection(), settings.getDriverJDBC());
 	}
 
-	public void scriptsFrom(List<FolderExecute> foldersExecute, Map<String, String> parameters) throws SQLException {
+	public void execute(List<FolderExecute> foldersExecute, Map<String, String> parameters) throws ExecutionError {
 		boolean lastConnection = false;
 		Connection connection = null;
 		try {
 			for (FolderExecute folderExecute : foldersExecute) {
-
 				if (lastConnection != folderExecute.isMaster() && connection != null) {
 					connection.close();
 					connection = null;
 				}
-
 				if (connection == null) {
 					connection = database.createConnection(folderExecute.isMaster());
 				}
-				execute(folderExecute, parameters, connection);
+
+				databaseExecution(readFiles(folderExecute), parameters, connection);
 				lastConnection = folderExecute.isMaster();
 			}
 		} catch (Exception e) {
-						
-			if (connection != null) {
-				connection.close();
+			if (settings.getErrorAction() == ErrorAction.DROP) {
+				database.dropDatabase(settings.getServerConnection().getDatabaseName());
 			}
-			database.dropDatabase(settings.getServerConnection().getDatabaseName());
-
+			throw new ExecutionError(e);
 		} finally {
 			if (connection != null) {
 				try {
 					connection.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error("Error closing connection: " + e);
 				}
 			}
 		}
 	}
 
-	private void checkParameters(List<File> files) throws IOException {
-		Map<String, FileParameter> parameters = new HashMap<>();
-
-		for (File file : files) {
-			String fileString = new String(Files.readAllBytes(file.toPath()));
-			parameters.putAll(settings.getDriverJDBC().findParameters(fileString, file));
-		}
-		System.out.println(parameters);
-		// SHOW UI TO FILL IDENTIFIED PARAMETERS - ParamUI.fill(parameters)
-
-	}
-
-	private void execute(FolderExecute folderExecute, Map<String, String> parameters, Connection connection) throws Exception {
-		List<File> files = readFiles(folderExecute);
-		if (!settings.isRobot() && parameters == null && settings.getDriverJDBC().getParameterPattern() != null) {
-			try {
-				checkParameters(files);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
+	private void databaseExecution(List<File> files, Map<String, String> parameters, Connection connection)
+			throws ExecutionError {
 		for (File f : files) {
 			try {
 				String fileString = new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8).trim();
@@ -100,21 +77,20 @@ public class ScriptExecutor {
 				}
 				database.executeQuery(connection, fileString);
 				logger.debug("Arquivo executado com sucesso: " + f.getAbsolutePath());
-			} catch (ClassNotFoundException | SQLException | IOException e) {
-				logger.error("Erro no arquivo: " + f.getAbsolutePath(), e);
-				throw e;
-			}					
+			} catch (Throwable e) {
+				logger.error("Erro no arquivo: " + f.getAbsolutePath() + " - ERROR MSG [" + e.getMessage()
+						+ "] More detais set log to debug mode");
+				logger.debug(e);
+				if (settings.getErrorAction() != ErrorAction.CONTINUE) {
+					throw new ExecutionError(e);
+				}
+			}
 		}
 	}
 
 	private List<File> readFiles(FolderExecute folderExecute) {
 		return Arrays.stream(folderExecute.getFolder().listFiles()).filter(f -> {
-			try {
-				return "text/sql".equals(MimeTypeUtility.retrieveMimeType(f));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
+			return "sql".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()));
 		}).collect(Collectors.toList());
 	}
 }

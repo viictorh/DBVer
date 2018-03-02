@@ -3,3 +3,4 @@
 .settings/*
 target/*
 /target/
+/log4j-application.log

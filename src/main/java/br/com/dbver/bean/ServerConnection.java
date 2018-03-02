@@ -64,7 +64,8 @@ public class ServerConnection {
 
 	@Override
 	public String toString() {
-		return "ServerConnection [server=" + server + ", user=" + user + ", password=" + password + "]";
+		return "ServerConnection [server=" + server + ", instance=" + instance + ", port=" + port + ", user=" + user
+				+ ", password=" + password + ", databaseName=" + databaseName + "]";
 	}
 
 }

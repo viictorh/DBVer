@@ -1,4 +1,4 @@
-package br.com.dbver.dao;
+package br.com.dbver.sqlserver;
 
 import java.sql.SQLException;
 
@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import br.com.dbver.bean.ServerConnection;
+import br.com.dbver.dao.Database;
 import br.com.dbver.driver.DriverJDBC;
 import br.com.dbver.driver.SQLServerDriver;
 
@@ -15,9 +16,9 @@ import br.com.dbver.driver.SQLServerDriver;
  * @author victor
  *
  */
-public class SQLServerConnectionJUnit {
+public class ConnectionJUnit {
 
-	private final static Logger logger = Logger.getLogger(SQLServerConnectionJUnit.class);
+	private final static Logger logger = Logger.getLogger(ConnectionJUnit.class);
 	private Database dbExecutor;
 
 	@Before

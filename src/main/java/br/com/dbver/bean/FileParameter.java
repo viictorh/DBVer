@@ -2,6 +2,11 @@ package br.com.dbver.bean;
 
 import java.io.File;
 
+/**
+ * 
+ * @author victor.bello
+ *
+ */
 public class FileParameter {
 	private String value;
 	private File file;
@@ -29,6 +34,11 @@ public class FileParameter {
 
 	public void setFile(File file) {
 		this.file = file;
+	}
+
+	@Override
+	public String toString() {
+		return "FileParameter [value=" + value + ", file=" + file + "]";
 	}
 
 }

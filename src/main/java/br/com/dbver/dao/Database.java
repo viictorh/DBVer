@@ -44,28 +44,28 @@ public class Database {
 	public void executeQuery(Connection connection, String query) throws ClassNotFoundException, SQLException {
 		logger.debug("executeQuery(query)");
 		logger.debug(query);
+		executeStatement(connection, query);
+	}
+
+	public void dropDatabase(String databaseName) {
+		logger.debug("dropDatabase(connection)");
+		String query = driverJDBC.generateDropDatabaseStatement(serverConnection);
+		logger.debug(query);
+		try (Connection connection = DriverManager
+				.getConnection(driverJDBC.generateURLConnection(serverConnection, true))) {
+			executeStatement(connection, query);
+		} catch (SQLException e) {
+			logger.error("Error dropping database" + serverConnection.getDatabaseName() + ". " + e.getMessage());
+		}
+	}
+
+	private void executeStatement(Connection connection, String query) throws SQLException {
 		try (Statement stmt = connection.createStatement();) {
 			List<String> queryList = driverJDBC.prepareQuery(query);
 			for (String q : queryList) {
 				stmt.execute(q);
 			}
 		}
-	}
-
-	public void dropDatabase(String databaseName) throws SQLException {		
-		logger.debug("dropDatabase(connection)");
-		String query = driverJDBC.generateDropDatabaseStatement(serverConnection);
-		logger.debug(query);
-		Connection connection = DriverManager.getConnection(driverJDBC.generateURLConnection(serverConnection, true));		
-		
-		try (Statement stmt = connection.createStatement();) {
-			List<String> queryList = driverJDBC.prepareQuery(query);
-			for (String q : queryList) {
-				stmt.execute(q);
-			}
-		} catch (SQLException e) {
-			logger.error("Error dropping database" + serverConnection.getDatabaseName() + ". " + e.getMessage());
-		}		
 	}
 
 }
