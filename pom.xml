@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com</groupId>
 	<artifactId>dbver</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.0-beta.0</version>
 	<name>DBVerr</name>
 	<description>Aplicativo para auxiliar a criação de banco de dados baseando-se nos scripts passados</description>
 
