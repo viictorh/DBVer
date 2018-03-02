@@ -34,26 +34,25 @@ public class Database {
 	}
 
 	public void executeQuery(String query, boolean master) throws ClassNotFoundException, SQLException {
-		logger.debug("executeQuery(query)");
-		logger.debug(query);
 		try (Connection connection = createConnection(master)) {
 			executeQuery(connection, query);
 		}
 	}
 
 	public void executeQuery(Connection connection, String query) throws ClassNotFoundException, SQLException {
-		logger.debug("executeQuery(query)");
-		logger.debug(query);
+		logger.trace("executeQuery(connection, query)");
+		logger.trace(query);
 		executeStatement(connection, query);
 	}
 
 	public void dropDatabase(String databaseName) {
 		logger.debug("dropDatabase(connection)");
 		String query = driverJDBC.generateDropDatabaseStatement(serverConnection);
-		logger.debug(query);
+		logger.trace(query);
 		try (Connection connection = DriverManager
 				.getConnection(driverJDBC.generateURLConnection(serverConnection, true))) {
 			executeStatement(connection, query);
+			logger.debug("Dropped database: " + databaseName);
 		} catch (SQLException e) {
 			logger.error("Error dropping database" + serverConnection.getDatabaseName() + ". " + e.getMessage());
 		}
